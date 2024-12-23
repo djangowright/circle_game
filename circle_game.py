@@ -5,7 +5,7 @@ import random
 pygame.init()
 
 # Set up display
-DISPLAYSURF = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
+DISPLAYSURF = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 pygame.display.set_caption('Circle game')
 
 # Colors
@@ -23,6 +23,7 @@ rainbow_colours = [
 
 # Global Variables
 gravity = 0.5
+fullscreen = True
 
 # Circle class
 class Circle:
@@ -156,6 +157,7 @@ def start_menu():
 # Main game loop
 def main_game():
     global DISPLAYSURF  # Ensure DISPLAYSURF is treated as a global variable
+    global fullscreen
     mainLoop = True
     rainbow_mode = False
     eraser_mode = False
@@ -177,7 +179,8 @@ def main_game():
                 mainLoop = False
 
             if event.type == pygame.VIDEORESIZE:
-                DISPLAYSURF = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                if not fullscreen:
+                    DISPLAYSURF = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
                 menu_button = pygame.Rect(DISPLAYSURF.get_width() // 2 - 50, 10, 100, 30)
 
             # Check for mouse button down event
@@ -210,9 +213,14 @@ def main_game():
                             elif 160 <= mouse_pos[1] <= 180:
                                 circles.clear()  # Clear all circles
                             elif 200 <= mouse_pos[1] <= 220:
+                                if fullscreen:
+                                    DISPLAYSURF = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+                                else:
+                                    DISPLAYSURF = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+                                fullscreen = not fullscreen
+                            elif 240 <= mouse_pos[1] <= 260:
                                 mainLoop = False  # Exit game
                         show_game_menu = not show_game_menu  # Toggle game menu visibility
-
                     else:
                         if eraser_mode:
                             # Check if a circle was clicked and remove it
@@ -276,11 +284,13 @@ def main_game():
                 eraser_text = font.render('Eraser', True, (255, 255, 255))
                 clear_text = font.render('Clear All', True, (255, 255, 255))
                 exit_text = font.render('Exit', True, (255, 255, 255))
+                fullscreen_text = font.render('Toggle Fullscreen', True, (255,255, 255))
 
                 DISPLAYSURF.blit(rgb_text, (DISPLAYSURF.get_width() // 2 - 125, 80))
                 DISPLAYSURF.blit(eraser_text, (DISPLAYSURF.get_width() // 2 - 125, 120))
                 DISPLAYSURF.blit(clear_text, (DISPLAYSURF.get_width() // 2 - 125, 160))
-                DISPLAYSURF.blit(exit_text, (DISPLAYSURF.get_width() // 2 - 125, 200))
+                DISPLAYSURF.blit(fullscreen_text, (DISPLAYSURF.get_width() // 2 - 125, 200))
+                DISPLAYSURF.blit(exit_text, (DISPLAYSURF.get_width() // 2 - 125, 240))
 
         pygame.display.update()
         clock.tick(60)
