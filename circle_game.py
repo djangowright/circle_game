@@ -86,7 +86,7 @@ def start_menu():
 
     # Start Menu title and buttons
     title_text = font.render('Circle Game', True, (255, 255, 255))
-    subtitle_text = subtitle_font.render('By Django Wright', True, (255, 255, 255))
+    subtitle_text = subtitle_font.render('by Django Wright', True, (255, 255, 255))
     start_button = pygame.Rect(300, 300, 200, 50)
     exit_button = pygame.Rect(300, 370, 200, 50)
 
