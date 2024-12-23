@@ -21,20 +21,50 @@ rainbow_colours = [
     (238, 130, 238) # Violet
 ]
 
+# Global Variables
+gravity = 0.5
+
 # Circle class
 class Circle:
     def __init__(self, position, radius, color):
-        self.position = position
+        self.x_position = position[0]
+        self.y_position = position[1]
         self.radius = radius
         self.color = color
         self.color_index = 0
+        self.y_velocity = 0
+        self.x_velocity = 0
+        self.stopped_counter = 0
+        self.stopped = False
 
     def draw(self, surface):
-        pygame.draw.circle(surface, self.color, self.position, self.radius)
+        pygame.draw.circle(surface, self.color, (self.x_position, self.y_position), self.radius)
 
     def cycle_color(self):
         self.color_index = (self.color_index + 1) % len(rainbow_colours)
         self.color = rainbow_colours[self.color_index]
+    
+    def update_position(self):
+        
+        # Reverse direction when circle hits edge
+        if self.y_position >= DISPLAYSURF.get_height() - self.radius:
+            self.y_velocity = ( self.y_velocity * -1 ) * 0.8 # 'Bounce' and lose a bit of speed 
+            
+            # If we're at the edge with low velocity, squish ("dampen") the bounce.
+            # Count how many times we've been around the loop whilst stopped.
+            # After 30 'stopped' loops, set the 'stopped' variable so that this circle is deleted.
+            if abs( self.y_velocity ) < 4:
+                self.y_velocity = self.y_velocity / 2 # Low velocity. Don't let it bounce much.
+                self.stopped_counter += 1
+                if self.stopped_counter >= 16:
+                    self.stopped = True
+
+        # Update the position. If we are 'below' the ground, set our position to the ground.
+        self.y_position = self.y_position - self.y_velocity
+        if( self.y_position > DISPLAYSURF.get_height() - self.radius ):
+            self.y_position = DISPLAYSURF.get_height() - self.radius
+
+        self.y_velocity = self.y_velocity - gravity # Added gravity to y velocity
 
 # Pause Menu
 def pause_menu():
@@ -211,8 +241,12 @@ def main_game():
             # Clear the screen
             DISPLAYSURF.fill((0, 0, 0))
 
-            # Draw all circles
+            # Remove all 'stopped' circles
+            circles = [circle for circle in circles if circle.stopped == False ]
+
+              # Draw all circles and update position of circles
             for circle in circles:
+                circle.update_position()
                 circle.draw(DISPLAYSURF)
 
             # If rainbow mode is active, cycle colors
