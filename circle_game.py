@@ -217,7 +217,7 @@ def main_game():
                         if eraser_mode:
                             # Check if a circle was clicked and remove it
                             for circle in circles[:]:
-                                if (circle.position[0] - mouse_pos[0])**2 + (circle.position[1] - mouse_pos[1])**2 <= circle.radius**2:
+                                if (circle.x_position - mouse_pos[0])**2 + (circle.y_position - mouse_pos[1])**2 <= circle.radius**2:
                                     circles.remove(circle)
                                     break
                         else:
